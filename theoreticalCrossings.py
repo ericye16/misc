@@ -3,12 +3,15 @@
 from __future__ import division, print_function
 from random import normalvariate
 
-k_UsingGaussian = True #very interesting if you make set it True...
+k_UsingGaussian = False #very interesting if you make set it True...
 k_mu = 11
 k_sig = 3
 n = 1000
 
 numRetries = 100
+
+if not k_UsingGaussian:
+    numRetries = 1
 
 def genK():
     if k_UsingGaussian:
