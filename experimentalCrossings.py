@@ -57,6 +57,7 @@ def getData():
     y = []
     for i in range(n - 1):
         y.append(hits[i]/numberOfTimesToRunSims)
+    return y
 
 def writeToFile(fname):
     import pickle
