@@ -58,9 +58,9 @@ def getData():
     for i in range(n - 1):
         y.append(hits[i]/numberOfTimesToRunSims)
 
-def writeToFile():
+def writeToFile(fname):
     import pickle
-    fi = open('experimental-data', 'w')
+    fi = open(fname + '.outputs', 'w')
     pickle.dump(getData(), fi, pickle.HIGHEST_PROTOCOL)
     fi.close()
 
@@ -70,4 +70,14 @@ def plot():
     plt.show()
 
 if __name__ == '__main__':
-    writeToFile()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == 'write':
+        print('Writing to file.')
+        if len(sys.argv) > 2:
+            fname = sys.argv[2]
+        else:
+            fname = 'experimentalCrossings'
+        writeToFile(fname)
+    else:
+        print('Plotting.')
+        plot()

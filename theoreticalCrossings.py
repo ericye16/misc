@@ -77,13 +77,23 @@ def plot():
     plt.plot(range(1, n + 1), getData(), 'r-') #remove 'r-' to make it blue
     plt.show()
 
-def writeToFile():
+def writeToFile(fname):
     import pickle
-    fi = open('theoretical_output', 'w', -1)
+    fi = open(fname + '.outputs', 'w')
     pickle.dump(getData(), fi, pickle.HIGHEST_PROTOCOL)
     fi.close()
 
 
 
 if __name__ == '__main__':
-    plot()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == 'write':
+        print('Writing to file.')
+        if len(sys.argv) > 2:
+            fname = sys.argv[2]
+        else:
+            fname = 'theoreticalCrossings'
+        writeToFile(fname)
+    else:
+        print('Plotting.')
+        plot()
