@@ -78,9 +78,9 @@ def plot():
     plt.show()
 
 def writeToFile():
-    import cPickle
+    import pickle
     fi = open('theoretical_output', 'w', -1)
-    cPickle.dump(getData(), fi)
+    pickle.dump(getData(), fi, pickle.HIGHEST_PROTOCOL)
     fi.close()
 
 

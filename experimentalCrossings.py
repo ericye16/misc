@@ -3,7 +3,6 @@
 # Creds to Andrew who first wrote it.
 
 from __future__ import division, print_function
-import matplotlib.pyplot as plt
 from random import gauss,randrange
 
 k_UsingGaussian = True
@@ -51,15 +50,24 @@ def runSims(num, chrome1, chrome2, allele1, allele2):
             numCrosses += 1
     return numCrosses
 
-def fdisplay():
+def getData():
     hits = []
     for i in range(1, n):
         hits.append(runSims(numberOfTimesToRunSims, A1, A2, allele1, i))
     y = []
     for i in range(n - 1):
         y.append(hits[i]/numberOfTimesToRunSims)
-    plt.plot(range(n - 1), y)
+
+def writeToFile():
+    import pickle
+    fi = open('experimental-data', 'w')
+    pickle.dump(getData(), fi, pickle.HIGHEST_PROTOCOL)
+    fi.close()
+
+def plot():
+    import matplotlib.pyplot as plt
+    plt.plot(range(1, n), getData())
     plt.show()
 
 if __name__ == '__main__':
-    fdisplay()
+    writeToFile()
