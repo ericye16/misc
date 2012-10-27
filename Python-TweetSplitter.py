@@ -32,7 +32,9 @@ toTweet = []
 while text:
     numChars = 140
     h = text[:numChars]
-    if ' ' not in h:
+    if text[numChars:] == '':
+        toTweet.append(h)
+    elif ' ' not in h:
         toTweet.append(h)
     else:
         spaceAt = h.rfind(' ')
@@ -43,6 +45,9 @@ while text:
 
 ##toTweet = splitText(text)
 ##Check with user
+for i in range(len(toTweet)):
+    print "{0}.============================================".format(i + 1)
+    print toTweet[i]
 areWeOkayToGo = raw_input('Total of {0} tweets. Continue (y/n)?'.format(len(toTweet)))
 if areWeOkayToGo != 'y':
     exit()
