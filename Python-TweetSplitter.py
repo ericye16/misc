@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os, twitter, time
+import os, twitter, time, base64
 from secret_keys import *
 
-DELAY = 0.05
+encoded = False
 
 MY_TWITTER_CREDS = os.path.expanduser('~/.pyTweetSplitter')
 if not os.path.exists(MY_TWITTER_CREDS):
@@ -16,16 +16,23 @@ t = twitter.Twitter(auth=twitter.OAuth(
     oauth_token, oauth_secret, CONSUMER_KEY, CONSUMER_SECRET))
 
 print 'Enter the text you want split. Type \'done\' in its own line to finish.'
+print 'To (very unsecurely) encode your tweets, type \'vent\' in its own line to finish.'
 
 inputs = []
 while True:
     line = raw_input()
     if line == 'done':
         break
+    elif line == 'vent':
+        encoded = True
+        break
     else:
         inputs.append(line)
 
 text = "\n".join(inputs)
+
+if encoded:
+    text = base64.encodestring(text)
 
 ##def splitText(text):
 toTweet = []
