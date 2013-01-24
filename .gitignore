@@ -1,2 +1,6 @@
 *.outputs
 secret_keys*
+*.dvi
+*.pdf
+*.aux
+*.log
