@@ -3,7 +3,7 @@
 
 from datetime import date
 
-IS_WEBSERVER = True
+IS_WEBSERVER = False
 
 #format: ("name", yyyy, mm, dd, doICare)
 deadlines = {
@@ -19,7 +19,6 @@ deadlines = {
     ("SAT -- November", 2013, 11, 2, True),
     ("AP Calculus", 2013, 5, 13, True),
     ("McMaster for Ontario high school students", 2014, 1, 15, True),
-    ("Today", 2013, 9, 3, True),
 }
 
 class Colours:
