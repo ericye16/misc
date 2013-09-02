@@ -19,6 +19,12 @@ deadlines = {
     ("SAT -- November", 2013, 11, 2, True),
     ("AP Calculus", 2013, 5, 13, True),
     ("McMaster for Ontario high school students", 2014, 1, 15, True),
+    ("Beginning of 2013-2014 school year", 2013, 9, 3, True),
+    ("Loran Scholarship sponsored application", 2013, 10, 16, False),
+    ("Loran Scholarship direct application", 2013, 10, 23, False),
+    ("U of T national scholarship", 2013, 11, 8, False),
+    ("UPenn early decision", 2013, 11, 1, True),
+    ("UPenn regular decision", 2014, 1, 1, False),
 }
 
 class Colours:
@@ -59,17 +65,16 @@ for deadline in deadlines:
 if IS_WEBSERVER: #print the headers
     print "Content-Type: text/html"     # HTML is following
     print                               # blank line, end of headers
-    print """
-    <html>
-    <head>
-    <title>Days until</title>
-    </head>
-    <body>
-    <h1>Days Until...?</h1>
-    <ul>
-    """
+    print """<html>
+<head>
+<title>Days until</title>
+</head>
+<body>
+<h1>Days Until...?</h1>
+<ul>
+"""
     
-for deadline in sorted(output, reverse=True):
+for deadline in sorted(output, reverse=(False if IS_WEBSERVER else True)):
     if IS_WEBSERVER:
         print "<li>",
     else:
@@ -90,8 +95,7 @@ for deadline in sorted(output, reverse=True):
     print
 
 if IS_WEBSERVER:
-    print """
-    </ul>
-    </body>
-    </html>
+    print """</ul>
+</body>
+</html>
     """
