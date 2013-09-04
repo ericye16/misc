@@ -22,9 +22,12 @@ deadlines = {
     ("Beginning of 2013-2014 school year", 2013, 9, 3, True),
     ("Loran Scholarship sponsored application", 2013, 10, 16, False),
     ("Loran Scholarship direct application", 2013, 10, 23, False),
-    ("U of T national scholarship", 2013, 11, 8, False),
+    ("U of T national scholarship", 2013, 11, 8, True),
     ("UPenn early decision", 2013, 11, 1, True),
     ("UPenn regular decision", 2014, 1, 1, False),
+    ("Stanford regular decision", 2014, 1,1,True),
+    ("AP Physics Summative Project Prospectus", 2013, 12, 2, True),
+    ("Scotiabank National Scholarship", 2013, 10, 21, True),
 }
 
 class Colours:
@@ -51,7 +54,7 @@ def get_colour(days_left):
 today = date.today()
 output = set()
 for deadline in deadlines:
-    if not deadline[4]: # If we don't care
+    if not deadline[4] and not IS_WEBSERVER: # If we don't care
         continue
     then = date(deadline[1], deadline[2], deadline[3])
     if then < today: # Already passed
