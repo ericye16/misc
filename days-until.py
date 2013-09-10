@@ -28,6 +28,7 @@ deadlines = {
     ("Stanford regular decision", 2014, 1,1,True),
     ("AP Physics Summative Project Prospectus", 2013, 12, 2, True),
     ("Scotiabank National Scholarship", 2013, 10, 21, True),
+    ("Berkeley Application Deadline", 2013, 11, 30, True),
 }
 
 class Colours:

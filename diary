@@ -1,34 +1,29 @@
 #!/bin/bash
-DIARYFILE="$HOME/diary.gpg"
+DIARYFILE="$HOME/diary.tar"
 TMPDIARYFILE=`mktemp`
 
 # datestamp the entry for us
 echo `date` >> $TMPDIARYFILE
 echo "==============" >> $TMPDIARYFILE
 #edit the entry
-nano $TMPDIARYFILE
+nano +3 $TMPDIARYFILE
 
-# Decrypt the original diary file and keep it 
-TMPPREVDIARYFILE=`mktemp`
-echo "Decrypting previous diary file"
-if gpg -o - $DIARYFILE > $TMPPREVDIARYFILE; then
-    echo "Successfully decrypted file"
-else
-    echo "Decryption failed. Cleaning up."
-    shred -u $TMPDIARYFILE $TMPPREVDIARYFILE
-    exit -1
-fi
-
-# concatenate the files
-cat $TMPDIARYFILE >> "$TMPPREVDIARYFILE"
-gpg --symmetric --force-mdc -o - $TMPPREVDIARYFILE > $DIARYFILE
+# encrypt the new entry
+gpg -r FB8D294C --batch --encrypt $TMPDIARYFILE
 if [ $? ] ; then
     :
 else
-    echo "Encryption failed, previous files in" $TMPPREVDIARYFILE $TMPDIARYFILE
+    echo "Encryption failed, previous file in" $TMPDIARYFILE
     exit -1
 fi
 
-shred -u $TMPDIARYFILE $TMPPREVDIARYFILE
+shred -u $TMPDIARYFILE
+
+if [ -e $TMPDIARYFILE ]; then
+    echo "Shred failed. Sensitive data remaining in " $TMPDIARYFILE
+    exit -1
+fi
+
+tar -rf $DIARYFILE $TMPDIARYFILE.gpg # append the gpg-encrypted file to a tarchive
 
 echo "Diary recorded."
