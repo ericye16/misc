@@ -1,15 +1,18 @@
 #!/bin/bash
-DIARYFILE="$HOME/diary.tar"
-TMPDIARYFILE=`mktemp`
 USER_GPG_ID=FB8D294C
+DIARYFILE="$HOME/diary.tar"
 
-# datestamp the entry for us
+# Make a temporary initial file
+TMPDIARYFILE=`mktemp`
+
+echo "Initial diary entry" > $TMPDIARYFILE
 echo `date` >> $TMPDIARYFILE
 echo "==============" >> $TMPDIARYFILE
-#edit the entry
-nano +3 $TMPDIARYFILE
 
-# encrypt the new entry
+# edit the initial file
+nano +4 $TMPDIARYFILE
+
+#encrypt the file when you're done
 gpg -r $USER_GPG_ID --batch --encrypt $TMPDIARYFILE
 if [ $? ] ; then
     :
@@ -25,8 +28,8 @@ if [ -e $TMPDIARYFILE ]; then
     exit -1
 fi
 
-tar -rf $DIARYFILE $TMPDIARYFILE.gpg # append the gpg-encrypted file to a tarchive
+tar -cf $DIARYFILE $TMPDIARYFILE.gpg # append the gpg-encrypted file to a tarchive
 
 shred -u $TMPDIARYFILE.gpg
 
-echo "Diary recorded."
+echo "Diary initialized and recorded."
