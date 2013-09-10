@@ -1,0 +1,34 @@
+#!/bin/bash
+DIARYFILE="$HOME/diary.gpg"
+TMPDIARYFILE=`mktemp`
+
+# datestamp the entry for us
+echo `date` >> $TMPDIARYFILE
+echo "==============" >> $TMPDIARYFILE
+#edit the entry
+nano $TMPDIARYFILE
+
+# Decrypt the original diary file and keep it 
+TMPPREVDIARYFILE=`mktemp`
+echo "Decrypting previous diary file"
+if gpg -o - $DIARYFILE > $TMPPREVDIARYFILE; then
+    echo "Successfully decrypted file"
+else
+    echo "Decryption failed. Cleaning up."
+    shred -u $TMPDIARYFILE $TMPPREVDIARYFILE
+    exit -1
+fi
+
+# concatenate the files
+cat $TMPDIARYFILE >> "$TMPPREVDIARYFILE"
+gpg --symmetric --force-mdc -o - $TMPPREVDIARYFILE > $DIARYFILE
+if [ $? ] ; then
+    :
+else
+    echo "Encryption failed, previous files in" $TMPPREVDIARYFILE $TMPDIARYFILE
+    exit -1
+fi
+
+shred -u $TMPDIARYFILE $TMPPREVDIARYFILE
+
+echo "Diary recorded."
