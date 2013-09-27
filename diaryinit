@@ -10,7 +10,7 @@ echo `date` >> $TMPDIARYFILE
 echo "==============" >> $TMPDIARYFILE
 
 # edit the initial file
-nano +4 $TMPDIARYFILE
+vim +4 $TMPDIARYFILE
 
 #encrypt the file when you're done
 gpg -r $USER_GPG_ID --batch --encrypt $TMPDIARYFILE

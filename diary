@@ -7,7 +7,7 @@ USER_GPG_ID=FB8D294C
 echo `date` >> $TMPDIARYFILE
 echo "==============" >> $TMPDIARYFILE
 #edit the entry
-nano +3 $TMPDIARYFILE
+vim +3 $TMPDIARYFILE
 
 # encrypt the new entry
 gpg -r $USER_GPG_ID --batch --encrypt $TMPDIARYFILE
