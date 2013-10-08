@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+mkdir diarytmp
+pushd diarytmp
+tar -xf ../diary.tar
+cd tmp
+n=0
+for i in $(ls -rt *.gpg)
+do
+    mv $i `printf "%03d.gpg" $n`
+    n=$((n+1))
+done
+gpg --multifile --decrypt *.gpg
+rm *.gpg
+cat * | less
+echo "Securely shredding temporarily decrypted diary entries."
+shred *
+popd
+rm -rf diarytmp

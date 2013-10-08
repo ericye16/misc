@@ -6,6 +6,7 @@ USER_GPG_ID=FB8D294C
 # datestamp the entry for us
 echo `date` >> $TMPDIARYFILE
 echo "==============" >> $TMPDIARYFILE
+echo >> $TMPDIARYFILE
 #edit the entry
 vim +3 $TMPDIARYFILE
 
