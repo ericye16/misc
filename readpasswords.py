@@ -25,15 +25,14 @@ lineformat2 = re.compile(r'(\d+)-\|-.*?-\|-(.+?)-\|-([\w=\+\/]+)-\|-(.*?)\|--')
 origfile = open('cred')
 # the sqlite3 file
 conn = sqlite3.connect('passwords.db')
-conn.isolation_level = "DEFERRED"
 c = conn.cursor()
 
+# Make things faster
+c.execute("PRAGMA journal_mode = MEMORY")
+c.execute("PRAGMA syncrhonous = OFF")
+conn.isolation_level = "DEFERRED"
+
 # Create our tables
-c.execute("""
-CREATE TABLE passwords (
-encryptedpassword varchar(100) primary key,
-number int
-)""")
 c.execute("""
 CREATE TABLE hints(
 encryptedpassword varchar(100) REFERENCES passwords(encryptedpasswords),
@@ -41,6 +40,7 @@ idnumber int,
 hint varchar(100),
 email varchar(100),
 emaildomain varchar(100))""")
+
 conn.commit()
 origfile.next()
 count = 0
@@ -69,18 +69,14 @@ for line in origfile:
     
     #see if the password is already in the database. If it is, just increment the number
     #otherwise create a new row
-    c.execute("select * from passwords where encryptedpassword = ?", [encpassword])
-    row = c.fetchone()
-    if row is None:
-        c.execute("insert into passwords values (?,?)", (encpassword, 1))
-    else:
-        c.execute("update passwords set number = number + 1 where encryptedpassword =?", [encpassword])        
     c.execute("insert into hints values (?,?,?,?,?)", (encpassword, idnum, hint, email_first, email_second))
     # Only update every 1000-ish rows
     if (count % updateEvery == 0):
         conn.commit()
         print >> sys.stderr, "\r" + str(count),
     count += 1
+
+c.execute("""CREATE INDEX idx1 ON hints(encryptedpassword)""")
 print "Total count: " + count
 conn.commit()
 conn.close()
