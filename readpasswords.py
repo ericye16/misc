@@ -9,7 +9,11 @@ import sqlite3, re, base64, sys
 
 def convertB64ToHexString(n):
     "Convert the base64-encoded password strings in the dump into nice hex strings."
-    bytestring = base64.b64decode(n)
+    try:
+        bytestring = base64.b64decode(n)
+    except:
+        print "Error decoding:", n
+        return
     toReturnString = ""
     for char in range(len(bytestring)):
         toReturnString += hex(ord(bytestring[char]))[2:].zfill(2)
@@ -29,13 +33,13 @@ c = conn.cursor()
 
 # Make things faster
 c.execute("PRAGMA journal_mode = MEMORY")
-c.execute("PRAGMA syncrhonous = OFF")
 conn.isolation_level = "DEFERRED"
 
 # Create our tables
 c.execute("""
-CREATE TABLE hints(
-encryptedpassword varchar(100) REFERENCES passwords(encryptedpasswords),
+CREATE TABLE 
+IF NOT EXISTS hints(
+encryptedpassword varchar(100),
 idnumber int,
 hint varchar(100),
 email varchar(100),
@@ -45,6 +49,7 @@ conn.commit()
 origfile.next()
 count = 0
 updateEvery = 100000 # how frequently do we make a commit?
+startnumber = -1
 
 for line in origfile:
     #most lines match the first format
@@ -67,16 +72,25 @@ for line in origfile:
         encpassword = convertB64ToHexString(match.group(4))
         hint = match.group(5)
     
-    #see if the password is already in the database. If it is, just increment the number
-    #otherwise create a new row
-    c.execute("insert into hints values (?,?,?,?,?)", (encpassword, idnum, hint, email_first, email_second))
+    if count > startnumber:
+        #see if the password is already in the database. If it is, just increment the number
+        #otherwise create a new row
+        c.execute("insert into hints values (?,?,?,?,?)", (encpassword, idnum, hint, email_first, email_second))
     # Only update every 1000-ish rows
     if (count % updateEvery == 0):
-        conn.commit()
+        if count > startnumber:
+            conn.commit()
         print >> sys.stderr, "\r" + str(count),
     count += 1
 
 c.execute("""CREATE INDEX idx1 ON hints(encryptedpassword)""")
+c.execute("""CREATE INDEX emailidx ON hints(email)""")
+c.execute("""CREATE INDEX domainidx ON hints(emaildomain)""")
+c.execute("""CREATE TABLE IF NOT EXISTS passwordfreq(
+    encryptedpassword varchar(100) primary key,
+    frequency int)""")
+c.execute("""INSERT INTO passwordfreq SELECT encryptedpassword, COUNT(*) FROM hints
+GROUP BY encryptedpassword ORDER BY COUNT(*) DESC""")
 print "Total count: " + count
 conn.commit()
 conn.close()
