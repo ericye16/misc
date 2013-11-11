@@ -19,7 +19,7 @@ def convertB64ToHexString(n):
 
 # the format of the lines. The second is for people who can't properly type in emails.
 lineformat = re.compile(r'(\d+)-\|-.*?-\|-([\w\+._&-]+)@([\w\+.-]+)-\|-([\w=\+\/]+)-\|-(.*?)\|--')
-lineformat2 = re.compile(r'(\d+)-\|-.*?-\|-([\w\+._&-]+)-\|-([\w=\+\/]+)-\|-(.*?)\|--')
+lineformat2 = re.compile(r'(\d+)-\|-.*?-\|-(.+?)-\|-([\w=\+\/]+)-\|-(.*?)\|--')
 
 # the dump file
 origfile = open('cred')
@@ -29,7 +29,6 @@ conn.isolation_level = "DEFERRED"
 c = conn.cursor()
 
 # Create our tables
-c.execute("begin")
 c.execute("""
 CREATE TABLE passwords (
 encryptedpassword varchar(100) primary key,
@@ -38,13 +37,14 @@ number int
 c.execute("""
 CREATE TABLE hints(
 encryptedpassword varchar(100) REFERENCES passwords(encryptedpasswords),
-idnumber int primary key,
+idnumber int,
 hint varchar(100),
 email varchar(100),
 emaildomain varchar(100))""")
 conn.commit()
 origfile.next()
 count = 0
+updateEvery = 100000 # how frequently do we make a commit?
 
 for line in origfile:
     #most lines match the first format
@@ -69,8 +69,6 @@ for line in origfile:
     
     #see if the password is already in the database. If it is, just increment the number
     #otherwise create a new row
-    if count % 1000 == 0:
-        c.execute("begin")
     c.execute("select * from passwords where encryptedpassword = ?", [encpassword])
     row = c.fetchone()
     if row is None:
@@ -79,7 +77,7 @@ for line in origfile:
         c.execute("update passwords set number = number + 1 where encryptedpassword =?", [encpassword])        
     c.execute("insert into hints values (?,?,?,?,?)", (encpassword, idnum, hint, email_first, email_second))
     # Only update every 1000-ish rows
-    if (count % 1000 == 0):
+    if (count % updateEvery == 0):
         conn.commit()
         print >> sys.stderr, "\r" + str(count),
     count += 1
