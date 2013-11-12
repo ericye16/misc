@@ -91,6 +91,6 @@ c.execute("""CREATE TABLE IF NOT EXISTS passwordfreq(
     frequency int)""")
 c.execute("""INSERT INTO passwordfreq SELECT encryptedpassword, COUNT(*) FROM hints
 GROUP BY encryptedpassword ORDER BY COUNT(*) DESC""")
-print "Total count: " + count
+print "Total count: ", count
 conn.commit()
 conn.close()
